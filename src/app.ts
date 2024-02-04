@@ -18,7 +18,6 @@ app.get("/", (req, res) => {
     " req.headers.host": req.headers.host,
     "req.hostname": req.hostname,
   };
-  let domainName = "";
 
   try {
     dns.reverse(clientIp, (err, hostnames) => {
@@ -26,20 +25,16 @@ app.get("/", (req, res) => {
         console.error("Reverse DNS lookup failed:", err);
         res.status(500).send("Error fetching data");
       } else {
-        domainName =
+        const domainName =
           hostnames && hostnames.length > 0 ? hostnames[0] : "Unknown";
 
         // Send the result back to the client
-        res
-          .status(200)
-          .send(`Client IP: ${clientIp}, Domain Name: ${domainName}`);
+        res.send({ obj, domainName: domainName || "", reqHeader: req.header });
       }
     });
   } catch (error) {
     res.send({ statue: "error", obj });
   }
-
-  res.send({ obj, domainName, reqHeader: req.header });
 });
 
 const PORT = 3000;
