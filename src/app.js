@@ -17,10 +17,14 @@ app.get("/", (req, res) => {
         "ip.address": ip_1.default.address(),
         " req.headers.host": req.headers.host,
         "req.hostname": req.hostname,
-        "req.header(Origin)": req.header("Origin"),
+        "req.header(Origin1)": req.header("Origin"),
         "req.header(Host)": req.header("Host"),
+        "req.get('origin2')": req.get("origin"),
+        originalUrl: req.originalUrl,
+        "rawHeaders:": req.rawHeaders,
     };
-    res.send(obj);
+    console.log(req);
+    res.send({ obj, reqHeader: req.header });
 });
 const PORT = 3000;
 app.listen(PORT, () => {
