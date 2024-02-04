@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
       }
     });
   } catch (error: any) {
-    res.send({ statue: "error", obj, message: error?.message });
+    res.send({ statue: "error", obj, message: error });
   }
 });
 

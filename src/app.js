@@ -39,7 +39,7 @@ app.get("/", (req, res) => {
         });
     }
     catch (error) {
-        res.send({ statue: "error", obj, message: error === null || error === void 0 ? void 0 : error.message });
+        res.send({ statue: "error", obj, message: error });
     }
 });
 const PORT = 3000;
