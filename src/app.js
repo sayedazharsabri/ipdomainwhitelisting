@@ -5,9 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const ip_1 = __importDefault(require("ip"));
+const dns_1 = __importDefault(require("dns"));
 const app = (0, express_1.default)();
 app.get("/", (req, res) => {
     // Check X-Forwarded-For and fallback to X-Real-IP, then to req.connection.remoteAddress
+    const clientIp = ip_1.default.address();
     const obj = {
         "req.headers[x-forwarded-for]": req.headers["x-forwarded-for"],
         "req.headers[x-real-ip]": req.headers["x-real-ip"],
@@ -17,14 +19,28 @@ app.get("/", (req, res) => {
         "ip.address": ip_1.default.address(),
         " req.headers.host": req.headers.host,
         "req.hostname": req.hostname,
-        "req.header(Origin1)": req.header("Origin"),
-        "req.header(Host)": req.header("Host"),
-        "req.get('origin2')": req.get("origin"),
-        originalUrl: req.originalUrl,
-        "rawHeaders:": req.rawHeaders,
     };
-    console.log(req);
-    res.send({ obj, reqHeader: req.header });
+    let domainName = "";
+    try {
+        dns_1.default.reverse(clientIp, (err, hostnames) => {
+            if (err) {
+                console.error("Reverse DNS lookup failed:", err);
+                res.status(500).send("Error fetching data");
+            }
+            else {
+                domainName =
+                    hostnames && hostnames.length > 0 ? hostnames[0] : "Unknown";
+                // Send the result back to the client
+                res
+                    .status(200)
+                    .send(`Client IP: ${clientIp}, Domain Name: ${domainName}`);
+            }
+        });
+    }
+    catch (error) {
+        res.send({ statue: "error", obj });
+    }
+    res.send({ obj, domainName, reqHeader: req.header });
 });
 const PORT = 3000;
 app.listen(PORT, () => {
