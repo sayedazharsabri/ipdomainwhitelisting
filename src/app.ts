@@ -5,7 +5,6 @@ const app = express();
 app.get("/", (req, res) => {
   // Check X-Forwarded-For and fallback to X-Real-IP, then to req.connection.remoteAddress
 
-  console.log(req.header("Origin"), req.header("Host"));
   const obj = {
     "req.headers[x-forwarded-for]": req.headers["x-forwarded-for"],
     "req.headers[x-real-ip]": req.headers["x-real-ip"],
