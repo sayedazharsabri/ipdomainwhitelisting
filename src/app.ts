@@ -6,7 +6,7 @@ const app = express();
 app.get("/", (req, res) => {
   // Check X-Forwarded-For and fallback to X-Real-IP, then to req.connection.remoteAddress
 
-  const clientIp = ip.address();
+  const clientIp = req.headers["x-forwarded-for"]?.[0] ?? ip.address();
   const obj = {
     "req.headers[x-forwarded-for]": req.headers["x-forwarded-for"],
     "req.headers[x-real-ip]": req.headers["x-real-ip"],
@@ -23,13 +23,13 @@ app.get("/", (req, res) => {
     dns.reverse(clientIp, (err, hostnames) => {
       if (err) {
         console.error("Reverse DNS lookup failed:", err);
-        res.status(500).send("Error fetching data");
+        res.status(500).send({ error: "Error fetching data,", clientIp });
       } else {
         const domainName =
           hostnames && hostnames.length > 0 ? hostnames[0] : "Unknown";
 
         // Send the result back to the client
-        res.send({ obj, domainName: domainName || "", reqHeader: req.header });
+        res.send({ obj, domainName: domainName || "", clientIp });
       }
     });
   } catch (error) {
