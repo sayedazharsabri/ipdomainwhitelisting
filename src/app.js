@@ -30,12 +30,16 @@ app.get("/", (req, res) => {
             else {
                 const domainName = hostnames && hostnames.length > 0 ? hostnames[0] : "Unknown";
                 // Send the result back to the client
-                res.send({ obj, domainName: domainName || "", clientIp });
+                res.send({
+                    obj,
+                    domainName: domainName || "",
+                    clientIp: clientIp || "notfound",
+                });
             }
         });
     }
     catch (error) {
-        res.send({ statue: "error", obj });
+        res.send({ statue: "error", obj, message: error === null || error === void 0 ? void 0 : error.message });
     }
 });
 const PORT = 3000;
