@@ -17,6 +17,12 @@ const ip_1 = __importDefault(require("ip"));
 const dns_1 = __importDefault(require("dns"));
 const check_1 = require("./check");
 const app = (0, express_1.default)();
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    next();
+});
 app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // Check X-Forwarded-For and fallback to X-Real-IP, then to req.connection.remoteAddress
     var _a, _b, _c;
