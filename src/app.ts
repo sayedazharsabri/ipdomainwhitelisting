@@ -24,9 +24,9 @@ app.get("/", async (req, res) => {
     ipWhiteListingType: IP_WHITELISTING_TYPE.IPV4_ADDRESSES_WHITELIST,
     ipv4Addresses: ["35.157.117.28", "89.247.*", "192.168.1.1/24"],
   };
-  const whiteListStatus = isWhitelistedIP4(clientIP, hostingInfo);
+  const whiteListStatus = await isWhitelistedIP4(clientIP, hostingInfo);
   const obj = {
-    whiteListStatus,
+    whiteListStatus: whiteListStatus || "No Status",
     "req.headers[x-forwarded-for]": req.headers["x-forwarded-for"],
     "req.headers[x-real-ip]": req.headers["x-real-ip"],
     "req.socket.remoteAddress": req.socket.remoteAddress,
