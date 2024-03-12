@@ -38,27 +38,31 @@ app.get("/", async (req, res) => {
     " req.headers.host": req.headers.host,
     "req.hostname": req.hostname,
   };
+  res.send({
+    obj,
+    clientIp: clientIP || "notfound",
+  });
 
-  try {
-    dns.reverse(clientIP, (err, hostnames) => {
-      if (err) {
-        console.error("Reverse DNS lookup failed:", err);
-        res.status(500).send({ error: "Error fetching data,", clientIP });
-      } else {
-        const domainName =
-          hostnames && hostnames.length > 0 ? hostnames[0] : "Unknown";
+  // try {
+  //   dns.reverse(clientIP, (err, hostnames) => {
+  //     if (err) {
+  //       console.error("Reverse DNS lookup failed:", err);
+  //       res.status(500).send({ error: "Error fetching data,", clientIP });
+  //     } else {
+  //       const domainName =
+  //         hostnames && hostnames.length > 0 ? hostnames[0] : "Unknown";
 
-        // Send the result back to the client
-        res.send({
-          obj,
-          domainName: domainName || "",
-          clientIp: clientIP || "notfound",
-        });
-      }
-    });
-  } catch (error: any) {
-    res.send({ statue: "error", obj, message: error });
-  }
+  //       // Send the result back to the client
+  //       res.send({
+  //         obj,
+  //         domainName: domainName || "",
+  //         clientIp: clientIP || "notfound",
+  //       });
+  //     }
+  //   });
+  // } catch (error: any) {
+  //   res.send({ statue: "error", obj, message: error });
+  // }
 });
 
 const PORT = 3000;
