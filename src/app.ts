@@ -1,13 +1,32 @@
 import express from "express";
 import ip from "ip";
 import dns from "dns";
+import {
+  isWhitelistedIP4,
+  IP_WHITELISTING_TYPE,
+  HOSTING_INFO_TYPE,
+} from "./check";
 const app = express();
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
   // Check X-Forwarded-For and fallback to X-Real-IP, then to req.connection.remoteAddress
 
-  const clientIp = req.headers["x-forwarded-for"]?.[0] ?? ip.address();
+  let clientIP =
+    typeof req.headers["x-forwarded-for"] === "string"
+      ? req.headers["x-forwarded-for"]?.split(",")?.shift()?.trim()
+      : "";
+
+  if (!clientIP) {
+    clientIP = "";
+  }
+  const hostingInfo: HOSTING_INFO_TYPE = {
+    domainName: "",
+    ipWhiteListingType: IP_WHITELISTING_TYPE.IPV4_ADDRESSES_WHITELIST,
+    ipv4Addresses: ["35.157.117.28", "89.247.*", "192.168.1.1/24"],
+  };
+  const whiteListStatus = isWhitelistedIP4(clientIP, hostingInfo);
   const obj = {
+    whiteListStatus,
     "req.headers[x-forwarded-for]": req.headers["x-forwarded-for"],
     "req.headers[x-real-ip]": req.headers["x-real-ip"],
     "req.socket.remoteAddress": req.socket.remoteAddress,
@@ -20,10 +39,10 @@ app.get("/", (req, res) => {
   };
 
   try {
-    dns.reverse(clientIp, (err, hostnames) => {
+    dns.reverse(clientIP, (err, hostnames) => {
       if (err) {
         console.error("Reverse DNS lookup failed:", err);
-        res.status(500).send({ error: "Error fetching data,", clientIp });
+        res.status(500).send({ error: "Error fetching data,", clientIP });
       } else {
         const domainName =
           hostnames && hostnames.length > 0 ? hostnames[0] : "Unknown";
@@ -32,7 +51,7 @@ app.get("/", (req, res) => {
         res.send({
           obj,
           domainName: domainName || "",
-          clientIp: clientIp || "notfound",
+          clientIp: clientIP || "notfound",
         });
       }
     });
