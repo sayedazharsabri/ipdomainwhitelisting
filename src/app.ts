@@ -25,6 +25,7 @@ app.get("/", async (req, res) => {
     ipv4Addresses: ["35.157.117.28", "89.247.*", "192.168.1.1/24"],
   };
   const whiteListStatus = await isWhitelistedIP4(clientIP, hostingInfo);
+  console.log(`Whitelist status why not coming ${whiteListStatus}`);
   const obj = {
     whiteListStatus: whiteListStatus || "No Status",
     "req.headers[x-forwarded-for]": req.headers["x-forwarded-for"],
