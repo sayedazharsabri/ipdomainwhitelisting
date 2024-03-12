@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const ip_1 = __importDefault(require("ip"));
+const dns_1 = __importDefault(require("dns"));
 const check_1 = require("./check");
 const app = (0, express_1.default)();
 app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -28,10 +29,9 @@ app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const hostingInfo = {
         domainName: "",
         ipWhiteListingType: check_1.IP_WHITELISTING_TYPE.IPV4_ADDRESSES_WHITELIST,
-        ipv4Addresses: ["35.157.117.28", "89.247.*", "192.168.1.1/24"],
+        ipv4Addresses: ["35.157.117.28", "192.168.1.1/24"],
     };
     const whiteListStatus = yield (0, check_1.isWhitelistedIP4)(clientIP, hostingInfo);
-    console.log(`Whitelist status why not coming ${whiteListStatus}`);
     const obj = {
         whiteListStatus: whiteListStatus || "No Status",
         "req.headers[x-forwarded-for]": req.headers["x-forwarded-for"],
@@ -43,29 +43,27 @@ app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         " req.headers.host": req.headers.host,
         "req.hostname": req.hostname,
     };
-    res.send({
-        obj,
-        clientIp: clientIP || "notfound",
-    });
-    // try {
-    //   dns.reverse(clientIP, (err, hostnames) => {
-    //     if (err) {
-    //       console.error("Reverse DNS lookup failed:", err);
-    //       res.status(500).send({ error: "Error fetching data,", clientIP });
-    //     } else {
-    //       const domainName =
-    //         hostnames && hostnames.length > 0 ? hostnames[0] : "Unknown";
-    //       // Send the result back to the client
-    //       res.send({
-    //         obj,
-    //         domainName: domainName || "",
-    //         clientIp: clientIP || "notfound",
-    //       });
-    //     }
-    //   });
-    // } catch (error: any) {
-    //   res.send({ statue: "error", obj, message: error });
-    // }
+    try {
+        console.log(`DNS working for ${clientIP}`);
+        dns_1.default.reverse(clientIP, (err, hostnames) => {
+            if (err) {
+                console.error("Reverse DNS lookup failed:", err);
+                res.status(500).send({ error: "Error fetching data,", clientIP });
+            }
+            else {
+                const domainName = hostnames && hostnames.length > 0 ? hostnames[0] : "Unknown";
+                // Send the result back to the client
+                res.send({
+                    obj,
+                    domainName: domainName || "",
+                    clientIp: clientIP || "notfound",
+                });
+            }
+        });
+    }
+    catch (error) {
+        res.send({ statue: "error", obj, message: error });
+    }
 }));
 const PORT = 3000;
 app.listen(PORT, () => {
