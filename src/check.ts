@@ -23,11 +23,11 @@ const ipPatternToRegex = (ipPattern: string) => {
   return new RegExp(regexPattern);
 };
 
-// const hostingInfo: HOSTING_INFO_TYPE = {
-//   domainName: "",
-//   ipWhiteListingType: IP_WHITELISTING_TYPE.IPV4_ADDRESSES_WHITELIST,
-//   ipv4Addresses: ["198.168.*", "191*", "192.168.1.1/24"],
-// };
+const hostingInfo: HOSTING_INFO_TYPE = {
+  domainName: "",
+  ipWhiteListingType: IP_WHITELISTING_TYPE.IPV4_ADDRESSES_WHITELIST,
+  ipv4Addresses: ["192.*.*.*.*", "198.198.1.123", "10.10.1.1/24"],
+};
 
 const checkWhiteList = (clientIP: string, whitelistPatterns: string[]) => {
   let status = false;
@@ -68,8 +68,8 @@ export const isWhitelistedIP4 = async (
   }
 };
 
-// const clientIP = "198.168.2.255";
+const clientIP = "192.168.2.111";
 
-// isWhitelistedIP4(clientIP, hostingInfo).then((response) =>
-//   console.log(response)
-// );
+isWhitelistedIP4(clientIP, hostingInfo).then((response) =>
+  console.log(response)
+);

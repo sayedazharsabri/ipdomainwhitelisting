@@ -37,6 +37,8 @@ app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         ipWhiteListingType: check_1.IP_WHITELISTING_TYPE.IPV4_ADDRESSES_WHITELIST,
         ipv4Addresses: ["35.157.117.28", "192.168.1.1/24"],
     };
+    const host = req.get("host");
+    const origin = req.get("origin");
     const whiteListStatus = yield (0, check_1.isWhitelistedIP4)(clientIP, hostingInfo);
     const obj = {
         whiteListStatus: whiteListStatus || "No Status",
@@ -50,6 +52,8 @@ app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         "req.connection.remoteAddress": req.connection.remoteAddress,
         " req.headers.host": req.headers.host,
         "req.hostname": req.hostname,
+        host,
+        origin,
     };
     try {
         console.log(`DNS working for ${clientIP}`);
