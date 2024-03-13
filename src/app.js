@@ -44,8 +44,10 @@ app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         "req.headers[x-real-ip]": req.headers["x-real-ip"],
         "req.socket.remoteAddress": req.socket.remoteAddress,
         "req.ip": req.ip,
+        realip: req.headers["realip"],
         "req.socket.localAddress": req.socket.localAddress,
         "ip.address": ip_1.default.address(),
+        "req.connection.remoteAddress": req.connection.remoteAddress,
         " req.headers.host": req.headers.host,
         "req.hostname": req.hostname,
     };
